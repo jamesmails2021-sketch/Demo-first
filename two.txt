@@ -1,3 +1,9 @@
-netsol
+the basic Git workflow:
 
-india
+git add → stage changes
+
+git commit → save snapshot
+
+git push → upload
+
+git pull → download updates
