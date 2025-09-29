@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Customer Feedback Form</title>
+  <style>
+    :root{
+      --bg:#f6f8fb;
+      --card:#ffffff;
+      --accent:#3b82f6;
+      --muted:#6b7280;
+      --success:#10b981;
+      --danger:#ef4444;
+      --radius:12px;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:linear-gradient(180deg,var(--bg),#eef2ff);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+    .card{width:100%;max-width:880px;background:var(--card);border-radius:var(--radius);box-shadow:0 6px 22px rgba(2,6,23,0.08);padding:28px}
+    h1{margin:0 0 6px;font-size:20px}
+    p.lead{margin:0 0 18px;color:var(--muted)}
+    form{display:grid;grid-template-columns:1fr 320px;gap:20px}
+    @media (max-width:880px){form{grid-template-columns:1fr}}
+
+    .field{margin-bottom:12px}
+    label{display:block;font-size:13px;margin-bottom:6px;color:#111827}
+    input[type="text"], input[type="email"], textarea, select{
+      width:100%;padding:10px 12px;border-radius:10px;border:1px solid #e6e9ef;background:#fff;font-size:14px;color:#0f172a}
+    textarea{min-height:120px;resize:vertical}
+
+    .sidebar{background:linear-gradient(180deg,#fbfdff,#ffffff);padding:16px;border-radius:10px;border:1px solid #edf2f7}
+    .row{display:flex;gap:12px}
+    .small{font-size:13px;color:var(--muted)}
+
+    .rating{display:flex;align-items:center;gap:6px}
+    .stars{display:flex;gap:6px}
+    .star{width:36px;height:36px;border-radius:8px;background:#f3f4f6;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;user-select:none;border:1px solid transparent}
+    .star.selected{background:linear-gradient(90deg,#fde68a,#fb923c);color:#0b1220}
+    .star svg{width:18px;height:18px}
+
+    .actions{display:flex;gap:10px;margin-top:10px}
+    button{padding:10px 14px;border-radius:10px;border:0;cursor:pointer;font-weight:600}
+    .btn-primary{background:var(--accent);color:white}
+    .btn-ghost{background:transparent;border:1px solid #e6e9ef}
+
+    .helper{font-size:13px;color:var(--muted);margin-top:6px}
+    .required{color:var(--danger)}
+
+    .note{font-size:13px;color:var(--muted);margin-top:6px}
+
+    .submitted{display:none;padding:18px;border-radius:10px;background:#ecfdf5;color:var(--success);border:1px solid rgba(16,185,129,0.12)}
+
+    /* accessible focus */
+    .star:focus{outline:3px solid rgba(59,130,246,0.18)}
+    input:focus, textarea:focus, select:focus{outline:3px solid rgba(59,130,246,0.12)}
+
+    .error{color:var(--danger);font-size:13px;margin-top:6px}
+    pre.output{background:#0f172a;color:#e6eef8;padding:12px;border-radius:8px;overflow:auto;font-size:13px}
+
+  </style>
+</head>
+<body>
+  <main class="card" role="main">
+    <header>
+      <h1>Customer Feedback</h1>
+      <p class="lead">We'd love to hear about your experience. This form takes less than 2 minutes.</p>
+    </header>
+
+    <form id="feedbackForm" novalidate>
+      <section aria-labelledby="left-heading">
+        <input type="hidden" name="submittedAt" id="submittedAt">
+
+        <div class="field">
+          <label for="name">Full name <span class="required">*</span></label>
+          <input id="name" name="name" type="text" placeholder="Jane Doe" required aria-required="true">
+          <div class="error" id="nameError" aria-live="polite"></div>
+        </div>
+
+        <div class="field">
+          <label for="email">Email address <span class="required">*</span></label>
+          <input id="email" name="email" type="email" placeholder="you@example.com" required aria-required="true">
+          <div class="error" id="emailError" aria-live="polite"></div>
+        </div>
+
+        <div class="field">
+          <label for="orderId">Order / Reference ID (optional)</label>
+          <input id="orderId" name="orderId" type="text" placeholder="#A12B34 or 2025-12345">
+        </div>
+
+        <div class="field">
+          <label for="experience">How was your overall experience? <span class="required">*</span></label>
+          <select id="experience" name="experience" required aria-required="true">
+            <option value="">Choose one</option>
+            <option>Excellent</option>
+            <option>Good</option>
+            <option>Neutral</option>
+            <option>Poor</option>
+            <option>Terrible</option>
+          </select>
+          <div class="error" id="experienceError" aria-live="polite"></div>
+        </div>
+
+        <div class="field">
+          <label for="comments">Comments (what went well / what could be better) <span class="required">*</span></label>
+          <textarea id="comments" name="comments" placeholder="Tell us the details..." required aria-required="true"></textarea>
+          <div class="error" id="commentsError" aria-live="polite"></div>
+        </div>
+
+      </section>
+
+      <aside class="sidebar" aria-labelledby="right-heading">
+        <h2 id="right-heading" style="margin:0 0 8px;font-size:15px">Quick rating & options</h2>
+
+        <div class="field">
+          <label class="small">Star rating</label>
+          <div class="rating" role="radiogroup" aria-label="Star rating from 1 to 5" id="starGroup">
+            <div class="stars" id="stars">
+              <button type="button" class="star" data-value="1" aria-label="1 star" tabindex="0"> 
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .587l3.668 7.431L23.5 9.75l-5.75 5.6L19.335 24 12 20.013 4.665 24l1.585-8.65L.5 9.75l7.832-1.732L12 .587z"/></svg>
+              </button>
+              <button type="button" class="star" data-value="2" aria-label="2 stars" tabindex="-1">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .587l3.668 7.431L23.5 9.75l-5.75 5.6L19.335 24 12 20.013 4.665 24l1.585-8.65L.5 9.75l7.832-1.732L12 .587z"/></svg>
+              </button>
+              <button type="button" class="star" data-value="3" aria-label="3 stars" tabindex="-1">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .587l3.668 7.431L23.5 9.75l-5.75 5.6L19.335 24 12 20.013 4.665 24l1.585-8.65L.5 9.75l7.832-1.732L12 .587z"/></svg>
+              </button>
+              <button type="button" class="star" data-value="4" aria-label="4 stars" tabindex="-1">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .587l3.668 7.431L23.5 9.75l-5.75 5.6L19.335 24 12 20.013 4.665 24l1.585-8.65L.5 9.75l7.832-1.732L12 .587z"/></svg>
+              </button>
+              <button type="button" class="star" data-value="5" aria-label="5 stars" tabindex="-1">
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .587l3.668 7.431L23.5 9.75l-5.75 5.6L19.335 24 12 20.013 4.665 24l1.585-8.65L.5 9.75l7.832-1.732L12 .587z"/></svg>
+              </button>
+            </div>
+            <input type="hidden" name="rating" id="rating" required aria-required="true">
+          </div>
+          <div class="helper">Use arrow keys to change rating. Required.</div>
+          <div class="error" id="ratingError" aria-live="polite"></div>
+        </div>
+
+        <div class="field">
+          <label class="small">Would you recommend us?</label>
+          <div class="row" role="radiogroup" aria-label="Recommend">
+            <label style="display:flex;gap:8px;align-items:center"><input type="radio" name="recommend" value="yes"> Yes</label>
+            <label style="display:flex;gap:8px;align-items:center"><input type="radio" name="recommend" value="maybe"> Maybe</label>
+            <label style="display:flex;gap:8px;align-items:center"><input type="radio" name="recommend" value="no"> No</label>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="small" for="contactPref">Contact me about this</label>
+          <select id="contactPref" name="contactPref">
+            <option value="no">No, thanks</option>
+            <option value="email">Email</option>
+            <option value="phone">Phone</option>
+          </select>
+          <div class="note">We will never spam. Your data will be used only to improve our service.</div>
+        </div>
+
+        <div class="actions">
+          <button type="submit" class="btn-primary">Submit feedback</button>
+          <button type="reset" class="btn-ghost">Reset</button>
+        </div>
+
+        <div class="submitted" id="submittedBox" role="status" aria-live="polite">Thanks — your feedback was recorded.</div>
+
+      </aside>
+    </form>
+
+    <section style="margin-top:16px">
+      <details>
+        <summary style="cursor:pointer">Preview collected data (for demo)</summary>
+        <div style="margin-top:10px">
+          <pre class="output" id="jsonOutput">{ }</pre>
+        </div>
+      </details>
+    </section>
+
+  </main>
+
+  <script>
+    // Simple form handling and client-side validation/demo output
+    (function(){
+      const form = document.getElementById('feedbackForm');
+      const nameEl = document.getElementById('name');
+      const emailEl = document.getElementById('email');
+      const commentsEl = document.getElementById('comments');
+      const experienceEl = document.getElementById('experience');
+      const ratingInput = document.getElementById('rating');
+      const stars = document.getElementById('stars');
+      const submittedBox = document.getElementById('submittedBox');
+      const jsonOutput = document.getElementById('jsonOutput');
+
+      // validation error elements
+      const nameError = document.getElementById('nameError');
+      const emailError = document.getElementById('emailError');
+      const commentsError = document.getElementById('commentsError');
+      const experienceError = document.getElementById('experienceError');
+      const ratingError = document.getElementById('ratingError');
+
+      // star rating behavior
+      let currentRating = 0;
+      function updateStars(n){
+        currentRating = n;
+        ratingInput.value = n;
+        const btns = stars.querySelectorAll('.star');
+        btns.forEach(b=>{
+          const v = Number(b.dataset.value);
+          b.classList.toggle('selected', v <= n);
+          b.setAttribute('aria-checked', String(v === n));
+          b.tabIndex = v===1 ? 0 : -1; // keep first tabbable
+        });
+      }
+      stars.addEventListener('click', (e)=>{
+        const btn = e.target.closest('.star');
+        if(!btn) return;
+        updateStars(Number(btn.dataset.value));
+      });
+      // keyboard support
+      stars.addEventListener('keydown', (e)=>{
+        const key = e.key;
+        if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Enter',' '].includes(key)) return;
+        e.preventDefault();
+        if(key === 'ArrowLeft' || key === 'ArrowDown'){
+          updateStars(Math.max(1, currentRating - 1));
+        } else if(key === 'ArrowRight' || key === 'ArrowUp'){
+          updateStars(Math.min(5, currentRating + 1));
+        } else if(key === 'Enter' || key === ' '){
+          // space/enter toggles current (no-op because update already sets)
+        }
+      });
+
+      // form validation on submit
+      form.addEventListener('submit', (e)=>{
+        e.preventDefault();
+        clearErrors();
+        let valid = true;
+
+        if(!nameEl.value.trim()){ nameError.textContent = 'Please enter your name.'; valid=false }
+        if(!emailEl.value.trim()){ emailError.textContent = 'Please enter your email.'; valid=false }
+        else if(!/^\S+@\S+\.\S+$/.test(emailEl.value)){ emailError.textContent = 'Please enter a valid email address.'; valid=false }
+        if(!experienceEl.value){ experienceError.textContent = 'Please select an option.'; valid=false }
+        if(!commentsEl.value.trim() || commentsEl.value.trim().length < 10){ commentsError.textContent = 'Please provide more details (at least 10 characters).'; valid=false }
+        if(!ratingInput.value || Number(ratingInput.value) < 1){ ratingError.textContent = 'Please choose a rating.'; valid=false }
+
+        if(!valid){
+          // focus first error
+          const firstErr = form.querySelector('.error:not(:empty)');
+          if(firstErr){
+            const input = firstErr.previousElementSibling || firstErr.parentElement.querySelector('input, textarea, select, button');
+            if(input) input.focus();
+          }
+          return;
+        }
+
+        // set submitted timestamp
+        document.getElementById('submittedAt').value = new Date().toISOString();
+
+        // build data object
+        const data = {
+          name: nameEl.value.trim(),
+          email: emailEl.value.trim(),
+          orderId: document.getElementById('orderId').value.trim() || null,
+          experience: experienceEl.value,
+          comments: commentsEl.value.trim(),
+          rating: Number(ratingInput.value),
+          recommend: (form.querySelector('input[name="recommend"]:checked') || {value:null}).value,
+          contactPref: document.getElementById('contactPref').value,
+          submittedAt: document.getElementById('submittedAt').value
+        };
+
+        // Demo: show success and preview JSON. Replace with real submission (fetch/XHR) in production.
+        submittedBox.style.display = 'block';
+        jsonOutput.textContent = JSON.stringify(data, null, 2);
+
+        // briefly highlight success then reset (demo)
+        setTimeout(()=>{
+          form.reset();
+          updateStars(0);
+          submittedBox.style.display = 'none';
+        }, 2200);
+
+      });
+
+      form.addEventListener('reset', ()=>{
+        clearErrors();
+        updateStars(0);
+        jsonOutput.textContent = '{ }';
+      });
+
+      function clearErrors(){
+        [nameError,emailError,commentsError,experienceError,ratingError].forEach(el=>el.textContent='');
+      }
+
+      // initialize
+      updateStars(0);
+
+    })();
+  </script>
+</body>
+</html>
