@@ -7,3 +7,6 @@ git commit → save snapshot
 git push → upload
 
 git pull → download updates
+
+
+Step-by-Step Git Setup & Push to GitHub
